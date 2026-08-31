@@ -1,112 +1,48 @@
-# Vital Pay — CardPointe Payment Integration
+# MedPay — Integración de pagos
 
-Web-based checkout for Vital Pay, integrating CardPointe (Fiserv) as the
-payment processor and GoHighLevel (GHL) as the CRM/workflow platform for
-Ad Vital clinics. Supports both card and ACH/bank transfer payments.
+## ⚠️ Estado actual
 
-## What this is
+**Clover en pausa** — Aonghus indicó ignorar Clover por ahora (comunicado por Shalinder).
 
-A single Node/Express backend that:
-- Exposes the CardPointe payment API (`/payments`, `/checkout`) — auth,
-  capture, void, refund, inquire.
-- Serves a compiled React checkout UI as static files
-  (`backend/public/checkout`) — no separate frontend deployment needed.
-- Handles GHL OAuth install, SSO, and custom payment provider webhooks
-  (`/ghl`, `/oauth`, `/webhooks`).
-- Handles Alphaeon financing sessions (`/alphaeon`).
+**Enfoque vigente:** integración **CardPointe** en MedPay mobile/POS, con **Shalinder**.
 
-## Project structure
+**Repositorio GitHub:** [github.com/Sarajesko/medpay-clover](https://github.com/Sarajesko/medpay-clover)
+
+## Documentación
+
+| Archivo | Contenido |
+|---------|-----------|
+| **[docs/document-work-completed.md](docs/document-work-completed.md)** | **Work completed — one-page summary (EN)** |
+| **[docs/document-requirements-and-workflow.md](docs/document-requirements-and-workflow.md)** | **Requirements & workflow — one-page summary (EN)** |
+| [docs/informe-trabajo-realizado.md](docs/informe-trabajo-realizado.md) | Trabajo ya hecho — detalle completo (ES) |
+| [docs/checklist-integracion.md](docs/checklist-integracion.md) | Checklist técnico paso a paso con enlaces |
+| [docs/plan-integracion.md](docs/plan-integracion.md) | Plan por fases (integración pendiente) |
+| [documentation.md](documentation.md) | Aprendizaje CardPointe y referencia práctica |
+| [docs/postman-guide.md](docs/postman-guide.md) | Guía Postman UAT |
+| [steps.md](steps.md) | Checklist por fases del proyecto |
+| [information.md](information.md) | Contexto del equipo, reunión y correos Fiserv |
+| [docs/architecture.md](docs/architecture.md) | Arquitectura técnica y decisiones |
+| **[docs/vitalpay-marketplace-setup.md](docs/vitalpay-marketplace-setup.md)** | **Vital Pay — ngrok + Marketplace registration** |
+| **[docs/cardpointe-integration.md](docs/cardpointe-integration.md)** | **CardPointe — MedPay & Vital Pay (pasos de integración)** |
+| **[docs/proceso-vital-pay-advital.md](docs/proceso-vital-pay-advital.md)** | **Vital Pay en Ad Vital — paso a paso para principiantes (ES)** |
+| **[docs/clover-go3-android-studio.md](docs/clover-go3-android-studio.md)** | **Clover Go 3 — contexto, credenciales y Android Studio (ES)** |
+
+## Estructura
 
 ```text
-VitalPay2.0/
-├── backend/                 # Express API + compiled checkout (deploy this)
-│   ├── src/
-│   │   ├── config/          # CardPointe / Alphaeon env config
-│   │   ├── lib/              # Payment gateway abstraction (CardPointe, NMI)
-│   │   ├── middleware/       # Auth, webhook signature verification, rate limits
-│   │   ├── routes/           # payments, checkout, query, webhooks, ghl, alphaeon
-│   │   ├── services/         # GHL client/SSO/session, merchant config, tx store
-│   │   └── utils/            # crypto, logging, retry, idempotency
-│   └── public/checkout/      # Compiled checkout UI (served statically)
-├── frontend-checkout/        # React/Vite/Tailwind source for the checkout UI
-├── postman/                  # CardPointe UAT + local Postman collections
-└── scripts/                  # PowerShell helpers (ngrok, local dev)
+├── backend/          # Vital Pay API — CardPointe + GHL queryUrl
+├── docs/             # Documentación técnica
+├── postman/          # Colecciones y pruebas API
+└── infrastructure/   # .env y configuración de despliegue
 ```
 
-## Requirements
+## Rutas
 
-- Node.js 18+
-- CardPointe UAT (sandbox) or production credentials from Fiserv
-- (Optional) GHL OAuth app credentials, if using the GHL integration
+| Ruta | Estado |
+|------|--------|
+| **CardPointe** (mobile/POS) | **Activa** — ver checklist en [steps.md](steps.md) |
+| **Clover Marketplace** | **Pausada** — ver [docs/sandbox-setup.md](docs/sandbox-setup.md) cuando se retome |
 
-## Environment variables
+## Próximo paso
 
-This copy doesn't include a `.env.example`. The backend needs a `.env`
-file (referenced as `infrastructure/.env` relative to `backend/src/`,
-i.e. `VitalPay2.0/infrastructure/.env`) with at least:
-
-```env
-# CardPointe
-CARDPOINTE_ENV=uat
-CARDPOINTE_SITE_UAT=fts-uat
-CARDPOINTE_MERCHID_UAT=<merchant id>
-CARDPOINTE_API_USER_UAT=<api user>
-CARDPOINTE_API_PASS_UAT=<api pass>
-
-# Server
-PORT=3000
-NODE_ENV=development
-PUBLIC_BASE_URL=http://localhost:3000
-DEFAULT_PAYMENT_GATEWAY=cardpointe
-
-# GHL (optional, only needed for GHL install/SSO/webhooks)
-GHL_CLIENT_ID=
-GHL_CLIENT_SECRET=
-GHL_REDIRECT_URI=http://localhost:3000/oauth/installed
-
-# Alphaeon (optional)
-ALPHAEON_ENV=sandbox
-```
-
-Generate any required security keys with:
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
-
-## Running locally
-
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-
-## Backend client and gateway Core components
-	
-.env.example 	/ config/cardpointe.js: environment-scoped 	credentials (UAT and production side by side) selected via a single 	CARDPOINTE_ENV switch. the config module derives the gateway, 	CardSecure, and hosted-iframe URLs from the configured site and 	validates that site, merchid, apiUser and apiPass are all present, 	failing fast with a clear error if not.
- 	
-lib/cardpointe-client.js: 	a client class wrapping every 	CardPointe operation with Basic Auth header construction, a 	35-second timeout and a helper to detect gateway timeouts (respcode 62).
- 	
-lib/validators.js: schemas for every 	operation , rejecting 	incorrect requests before they reach 	CardPointe; and for switching to ACH payments
- 	
-routes/payments.js, 	routes/webhooks.js, routes/query.js: Express 	endpoints for tokenize, auth, capture, void, refund, inquire and 	funding. 
- 	
-server.js: 	boots the app, exposes a 	/health endpoint reporting the active CardPointe environment, and 	sets the payments routes.
- 	
-routes/ghl.js 	/ location-store.js / merchant-config.js: bind 	each clinic's GoHighLevel Location ID to its CardPointe merchant 	credentials, supporting the multi- client AdVital setup. This way, each one has its own merchID.
-
-
-##Checkout
-
-Context identification: the app waits for a payment_initiate_props message from the parent GHL frame (amount, locationId, publishableKey, orderId, transactionId, contact) before showing any form. Both are captured through CardPointe's Hosted iFrame Tokenizer — the same iframe for both — so the card number or routing/account never touches this app's own inputs. 
-
-CardPointe returns a token via postMessage, which enables the "Pay now" button once received.
-
-Submitting payment: on submit, the token (never the raw card or bank data), amount, and order/transaction/location context are sent to POST /checkout/pay.
-
-Backend handling: the backend resolves the clinic from locationId/publishableKey, selects that clinic's own CardPointe gateway and credentials, and authorizes the charge with an idempotency key tied to the transaction ID so a retry can never duplicate a charge. On approval, the transaction is recorded and a payment.captured webhook is sent. The response to the frontend contains only the approval status, charge ID, and reference codes — never merchant credentials. Declines are returned as 402 with the reason; timeouts are returned as 504 so the frontend can tell the difference.
-
-Result: the frontend shows a success or error screen and, either way, posts a message back to the parent GHL frame so GHL's own payment flow knows how to close out — the same postMessage pattern used by the admin panel, but here carrying the outcome of the charge instead of session data.
-
-
+Ver [documentation.md](documentation.md) → sección 9. Coordinar con **Shalinder** y probar Gateway API en Postman.
