@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Your Payment</title>
+  <style>
+    :root {
+      --background: #ffffff;
+      --foreground: #0a0a0a;
+      --primary: #030213;
+      --primary-foreground: #ffffff;
+      --secondary: #f1f2f6;
+      --muted: #ececf0;
+      --muted-foreground: #717182;
+      --accent: #e9ebef;
+      --destructive: #d4183d;
+      --border: rgba(0, 0, 0, 0.1);
+      --radius: 0.625rem;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      margin: 0;
+      padding: 0;
+    }
+
+    .page {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--primary);
+    }
+
+    .brand-name {
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 4px;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      padding-bottom: 8px;
+      border-bottom: 3px solid var(--muted);
+    }
+
+    .step.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin: 0 0 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--foreground);
+    }
+
+    input {
+      width: 100%;
+      padding: 9px 12px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      background: var(--muted);
+      border-radius: calc(var(--radius) - 2px);
+      font-size: 0.9rem;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .continue-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      border: none;
+      border-radius: calc(var(--radius) - 2px);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .continue-btn:hover { opacity: 0.9; }
+
+    .frame-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    iframe {
+      width: 100%;
+      height: 760px;
+      border: none;
+      display: block;
+    }
+
+    details {
+      margin-top: 20px;
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+
+    summary { cursor: pointer; }
+
+    #log {
+      background: #0f172a;
+      color: #a3e635;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 140px;
+      overflow: auto;
+      white-space: pre-wrap;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-name">Vital Pay</div>
+    </div>
+
+    <div class="steps">
+      <div class="step active">Payment Method</div>
+      <div class="step">Patient Info</div>
+      <div class="step">Payment Details</div>
+      <div class="step">Review &amp; Sign</div>
+      <div class="step">Receipt</div>
+    </div>
+
+    <div class="card">
+      <h2>Patient &amp; Order Details</h2>
+      <label for="amount">Amount due (USD)</label>
+      <input id="amount" type="number" value="300" step="0.01" />
+
+      <label for="locationId">Clinic location ID</label>
+      <input id="locationId" type="text" value="" placeholder="leave blank to use default" />
+
+      <div class="row">
+        <div>
+          <label for="firstName">First name</label>
+          <input id="firstName" type="text" value="Jane" />
+        </div>
+        <div>
+          <label for="lastName">Last name</label>
+          <input id="lastName" type="text" value="Doe" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" type="email" value="jane.doe@example.com" />
+        </div>
+        <div>
+          <label for="phone">Phone</label>
+          <input id="phone" type="text" value="5555550123" />
+        </div>
+      </div>
+
+      <button id="send" class="continue-btn">Continue to Payment</button>
+    </div>
+
+    <div class="frame-wrap">
+      <iframe id="checkoutFrame" src="/checkout/" title="Vital Pay checkout"></iframe>
+    </div>
+
+    <details>
+      <summary>Developer log</summary>
+      <div id="log">(waiting…)</div>
+    </details>
+  </div>
+
+  <script>
+    const frame = document.getElementById('checkoutFrame');
+    const log = document.getElementById('log');
+
+    function appendLog(msg) {
+      log.textContent += '\n' + JSON.stringify(msg);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    document.getElementById('send').addEventListener('click', () => {
+      const props = {
+        type: 'payment_initiate_props',
+        amount: parseFloat(document.getElementById('amount').value || '0'),
+        currency: 'USD',
+        orderId: 'order_' + Date.now(),
+        transactionId: 'txn_' + Date.now(),
+        locationId: document.getElementById('locationId').value || undefined,
+        publishableKey: undefined,
+        contact: {
+          id: 'contact_1',
+          firstName: document.getElementById('firstName').value,
+          lastName: document.getElementById('lastName').value,
+          email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value,
+        },
+      };
+      // Same-origin iframe (served from this backend), so a specific
+      // targetOrigin works here — in production GHL uses its own origin.
+      frame.contentWindow.postMessage(props, window.location.origin);
+      appendLog({ sent: props });
+    });
+
+    window.addEventListener('message', (event) => {
+      if (event.origin !== window.location.origin) return;
+      if (!event.data) return;
+      appendLog({ receivedFromCheckout: event.data });
+    });
+  </script>
+</body>
+</html>

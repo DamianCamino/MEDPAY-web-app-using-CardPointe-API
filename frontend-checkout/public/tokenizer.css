@@ -1,0 +1,66 @@
+/*
+ * Hoja de estilos aplicada DENTRO del iframe del Hosted iFrame Tokenizer de
+ * CardPointe (parametro `css=` de la URL del tokenizer).
+ *
+ * IMPORTANTE: los selectores de abajo son los ids/nombres mas comunes que
+ * usa el tokenizer de CardPointe (ccnumber, ccexp/expiry, cvv). Si al probar
+ * en el navegador los campos no se ven separados, hay que:
+ *   1. Abrir el iframe con clic derecho -> Inspeccionar (dentro del iframe).
+ *   2. Confirmar los ids/clases reales de los inputs.
+ *   3. Ajustar los selectores aqui abajo para que coincidan.
+ * Este archivo se sirve como estatico en /checkout/tokenizer.css porque vive
+ * en frontend-checkout/public/ (Vite lo copia tal cual al build).
+ */
+
+body {
+  margin: 0;
+  padding: 4px 2px;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: transparent;
+}
+
+/* Cada campo individual (numero, expiracion, cvv) en su propia caja,
+   con espacio generoso entre ellos. */
+input,
+select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+  padding: 12px 10px;
+  font-size: 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #5c67ff;
+  box-shadow: 0 0 0 2px rgba(92, 103, 255, 0.15);
+}
+
+/* Selectores especificos conocidos del tokenizer de CardPointe */
+#ccnumber,
+input[name="ccnumber"] {
+  margin-bottom: 14px;
+}
+
+#cvv,
+input[name="cvv"] {
+  margin-bottom: 0;
+}
+
+#ccexpiry,
+#expiry,
+input[name="ccexpiry"] {
+  margin-bottom: 14px;
+}
+
+/* Si el tokenizer arma los campos en una fila con divs contenedores,
+   esto los apila verticalmente con separacion. */
+div {
+  margin-bottom: 6px;
+}

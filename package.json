@@ -1,0 +1,29 @@
+{
+  "name": "clover-project",
+  "version": "1.0.0",
+  "description": "**Clover en pausa** — Aonghus indicó ignorar Clover por ahora (comunicado por Shalinder).",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "npm start --prefix backend",
+    "dev": "npm run dev --prefix backend",
+    "install:backend": "npm install --prefix backend",
+    "tunnel": "powershell -ExecutionPolicy Bypass -File scripts/start-ngrok.ps1",
+    "dev:all": "powershell -ExecutionPolicy Bypass -File scripts/start-vitalpay-dev.ps1",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sarajesko/medpay-clover.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Sarajesko/medpay-clover/issues"
+  },
+  "homepage": "https://github.com/Sarajesko/medpay-clover#readme"
+}

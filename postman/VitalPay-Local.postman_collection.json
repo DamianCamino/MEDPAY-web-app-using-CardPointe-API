@@ -1,0 +1,78 @@
+{
+  "info": {
+    "name": "Vital Pay Backend — Local",
+    "description": "Pruebas del backend Vital Pay (CardPointe + GHL queryUrl/checkout).\n\nRequiere `npm run dev` en backend y environment `VitalPay-Local.postman_environment.json`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{backend_url}}/health"
+      }
+    },
+    {
+      "name": "Checkout config",
+      "request": {
+        "method": "GET",
+        "url": "{{backend_url}}/checkout/config"
+      }
+    },
+    {
+      "name": "Authorize (direct API)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"account\": \"{{test_card}}\",\n  \"expiry\": \"{{test_expiry}}\",\n  \"amount\": \"1000\",\n  \"currency\": \"USD\",\n  \"capture\": \"Y\",\n  \"name\": \"Test Patient\"\n}"
+        },
+        "url": "{{backend_url}}/payments/authorize"
+      }
+    },
+    {
+      "name": "Checkout pay (GHL flow)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"token\": \"{{test_card}}\",\n  \"expiry\": \"{{test_expiry}}\",\n  \"amount\": 10,\n  \"currency\": \"USD\",\n  \"transactionId\": \"test-txn-001\",\n  \"locationId\": \"test-location\",\n  \"contact\": { \"id\": \"test-contact\", \"name\": \"Test User\", \"email\": \"test@example.com\" }\n}"
+        },
+        "url": "{{backend_url}}/checkout/pay"
+      }
+    },
+    {
+      "name": "GHL verify",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"verify\",\n  \"transactionId\": \"test-txn-001\",\n  \"chargeId\": \"{{retref}}\",\n  \"apiKey\": \"test-api-key\"\n}"
+        },
+        "url": "{{backend_url}}/query"
+      }
+    },
+    {
+      "name": "GHL refund",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"refund\",\n  \"amount\": 10,\n  \"transactionId\": \"test-txn-001\",\n  \"chargeId\": \"{{retref}}\",\n  \"apiKey\": \"test-api-key\"\n}"
+        },
+        "url": "{{backend_url}}/query"
+      }
+    },
+    {
+      "name": "Inquire",
+      "request": {
+        "method": "GET",
+        "url": "{{backend_url}}/payments/inquire/{{retref}}"
+      }
+    }
+  ]
+}
