@@ -205,14 +205,19 @@ export default function App() {
   return (
     <div className="min-h-screen w-full py-4 sm:py-8">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 w-full max-w-[480px] overflow-auto" style={{ maxHeight: 'calc(100vh - 32px)' }}>
-          <div className="p-4 sm:p-6 lg:p-8">
-            <h1 className="text-2xl font-bold text-center text-gray-900 mb-1">Vital Pay</h1>
-            {isStandalone && (
-              <p className="text-center text-[11px] uppercase tracking-wide text-amber-600 font-semibold mb-4">
-                Standalone test mode ({paymentProps.mode})
-              </p>
-            )}
+        <div className="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.04)] border border-gray-100/80 w-full max-w-[480px] overflow-auto" style={{ maxHeight: 'calc(100vh - 32px)' }}>
+          {/* ── Brand accent bar ── */}
+          <div className="h-1 w-full bg-gradient-to-r from-brand via-brand-dark to-brand rounded-t-2xl" />
+
+          <div className="p-5 sm:p-7 lg:p-8">
+            {/* ── Logo + Header ── */}
+            <div className="flex flex-col items-center mb-6">
+              <img
+                src="/checkout/logo.jpeg"
+                alt="Logo"
+                className="h-28 w-auto rounded-2xl object-contain shadow-md border border-gray-100/50"
+              />
+            </div>
 
             <ErrorModal message={error} onClose={() => setError(null)} />
 
@@ -220,8 +225,9 @@ export default function App() {
               <SuccessScreen detail={success} />
             ) : (
               <>
-                <div className="mb-4">
-                  <label className="block text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">
+                {/* ── Payment Method selector ── */}
+                <div className="mb-5">
+                  <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Payment Method
                   </label>
                   <PaymentMethodToggle
@@ -233,7 +239,7 @@ export default function App() {
                 </div>
 
                 {method !== 'alphaeon' && (
-                  <div className="mb-4">
+                  <div className="mb-5">
                     <PaymentSummary
                       amount={paymentProps.amount}
                       currency={paymentProps.currency}
@@ -260,8 +266,8 @@ export default function App() {
                 )}
 
                 {method === 'card' && (
-                  <div className="mt-3">
-                    <label htmlFor="postalCode" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                  <div className="mt-4">
+                    <label htmlFor="postalCode" className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
                       Billing ZIP / Postal code
                     </label>
                     <input
@@ -273,26 +279,48 @@ export default function App() {
                       onChange={(e) => setPostalCode(e.target.value)}
                       placeholder="e.g. 19102"
                       maxLength={10}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50/50 hover:border-gray-300 focus:bg-white focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all duration-200"
                     />
                   </div>
                 )}
 
                 {method !== 'alphaeon' && (
-                  <div className="mt-6 space-y-2">
+                  <div className="mt-7 space-y-2.5">
                     <button
                       onClick={handlePay}
                       disabled={paying || !token}
-                      className="w-full bg-brand hover:bg-brand-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors shadow-sm"
+                      className="relative w-full bg-brand hover:bg-brand-dark active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-[0_2px_8px_rgba(92,103,255,0.35)] hover:shadow-[0_4px_14px_rgba(92,103,255,0.4)] overflow-hidden group"
                     >
-                      {paying ? 'Processing…' : 'Pay now'}
+                      {/* Subtle shimmer overlay */}
+                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" aria-hidden="true" />
+                      <span className="relative flex items-center justify-center gap-2">
+                        {paying ? (
+                          <>
+                            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                            Processing…
+                          </>
+                        ) : (
+                          <>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+                            Pay now
+                          </>
+                        )}
+                      </span>
                     </button>
                     <button
                       onClick={handleCancel}
-                      className="w-full text-gray-500 text-sm py-2 hover:text-gray-700"
+                      className="w-full text-gray-400 text-sm py-2 hover:text-gray-600 transition-colors duration-200"
                     >
                       Cancel
                     </button>
+                  </div>
+                )}
+
+                {/* ── Trust footer ── */}
+                {method !== 'alphaeon' && (
+                  <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-center gap-1.5 text-[11px] text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+                    <span>Secured with 256-bit TLS encryption</span>
                   </div>
                 )}
               </>

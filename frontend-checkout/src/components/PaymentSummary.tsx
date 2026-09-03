@@ -14,9 +14,12 @@ export function PaymentSummary({
   currency?: string;
 }) {
   return (
-    <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 flex items-center justify-between">
-      <span className="text-sm font-semibold text-gray-700">Amount Due:</span>
-      <span className="text-xl font-bold text-gray-900">{formatMoney(amount, currency)}</span>
+    <div className="bg-gradient-to-br from-gray-50 to-gray-50/60 rounded-xl p-4 border border-gray-200/60 shadow-sm flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <div className="w-1.5 h-1.5 rounded-full bg-brand" />
+        <span className="text-sm font-semibold text-gray-500">Amount Due</span>
+      </div>
+      <span className="text-xl font-bold text-gray-900 tabular-nums">{formatMoney(amount, currency)}</span>
     </div>
   );
 }
