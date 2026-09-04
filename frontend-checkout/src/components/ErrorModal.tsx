@@ -19,7 +19,7 @@ export function ErrorModal({ message, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center animate-in fade-in zoom-in duration-150"
+        className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.12)] max-w-sm w-full p-6 text-center animate-in fade-in zoom-in duration-150 border border-gray-100"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 text-2xl flex items-center justify-center mx-auto mb-4">
@@ -29,7 +29,7 @@ export function ErrorModal({ message, onClose }: Props) {
         <p className="text-sm text-gray-600 mb-6">{message}</p>
         <button
           onClick={onClose}
-          className="w-full bg-brand hover:bg-brand-dark text-white font-semibold py-2.5 rounded-lg transition-colors"
+          className="w-full bg-brand hover:bg-brand-dark text-white font-semibold py-2.5 rounded-xl transition-colors duration-200"
         >
           Try Again
         </button>

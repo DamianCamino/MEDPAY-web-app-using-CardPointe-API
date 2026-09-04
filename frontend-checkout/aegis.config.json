@@ -1,0 +1,12 @@
+{
+  "aegisVersion": "0.1.0",
+  "severity": "high",
+  "languages": ["TypeScript", "JavaScript", "HTML", "CSS"],
+  "stack": ["react", "vite", "tailwindcss"],
+  "ai_rules": [
+    "PURE_UI_COMPONENTS: React components must separate UI rendering from business logic (CardPointe fetch logic).",
+    "STRICT_TYPING: All new props and state must have explicit TypeScript interfaces. No 'any'.",
+    "TAILWIND_ISOLATION: Do not use inline styles for structural layouts. Always use Tailwind utility classes.",
+    "SECURITY_PCI: Never store raw credit card data or PANs in React state or localStorage."
+  ]
+}

@@ -70,7 +70,7 @@ export function FinancePanel({ props, onApproved, onDeclined, onEvent }: Props) 
       <iframe
         title="Alphaeon financing"
         src={iframeUrl ?? undefined}
-        className="w-full h-[520px] border border-gray-200 rounded-md bg-white"
+        className="w-full h-[520px] border border-gray-200/60 rounded-xl bg-white shadow-sm"
         frameBorder={0}
         scrolling="yes"
         allow="geolocation; microphone; camera"
