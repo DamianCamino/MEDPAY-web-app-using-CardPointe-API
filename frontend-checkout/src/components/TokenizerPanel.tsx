@@ -14,7 +14,14 @@ const ACCOUNT_OPTIONS: { value: 'ECHK' | 'ESAV'; label: string }[] = [
   { value: 'ECHK', label: 'Checking' },
   { value: 'ESAV', label: 'Savings' },
 ];
-
+/** CardPointe css= expects INLINE rules (URL-encoded), not a stylesheet URL. */
+const TOKENIZER_CSS = [
+  'body{margin:0;padding:6px 4px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;font-size:14px;color:#374151;background:transparent;}',
+  'label{display:block;margin-bottom:6px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#9ca3af;}',
+  'input,select{display:block;width:100%;margin-bottom:14px;padding:10px 12px;font-size:15px;font-family:inherit;color:#111827;background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;}',
+  'input:focus,select:focus{outline:none;border-color:#5c67ff;background-color:#ffffff;}',
+  '.error{color:#b42318;border-color:#fecdca;background:#fef3f2;}',
+].join('');
 /** Custom headless dropdown — local UI state only; outer accountType logic is untouched. */
 function AccountTypeDropdown({
   accountType,
@@ -168,19 +175,11 @@ export function TokenizerPanel({
     if (publishableKey) qs.set('publishableKey', publishableKey);
     qs.set('method', method);
 
-    fetch(`/checkout/config?${qs}`)
-      .then((r) => r.json())
-      .then((cfg) => {
-        if (!cfg.tokenizerUrl) {
-          setTokenizerUrl(null);
-          return;
-        }
-        // Agregamos nuestra hoja de estilos propia para separar los campos
-        // internos del tokenizer (numero / expiracion / cvv) con mas espacio
-        // y claridad, en vez del layout compacto por defecto.
-        const cssUrl = `${window.location.origin}/checkout/tokenizer.css`;
+               // CardPointe applies css= as inline CSS (not a file URL).
         const separator = cfg.tokenizerUrl.includes('?') ? '&' : '?';
-        setTokenizerUrl(`${cfg.tokenizerUrl}${separator}css=${encodeURIComponent(cssUrl)}`);
+        setTokenizerUrl(
+          `${cfg.tokenizerUrl}${separator}css=${encodeURIComponent(TOKENIZER_CSS)}`
+        );
       })
       .catch(() => setTokenizerUrl(null));
   }, [method, locationId, publishableKey]);
