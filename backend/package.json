@@ -1,11 +1,11 @@
 {
   "name": "vitalpay-backend",
   "version": "0.1.0",
-  "description": "Vital Pay — CardPointe integration for Ad Vital (GHL custom payment provider)",
+  "description": "Vital Pay \u2014 CardPointe integration for Ad Vital (GHL custom payment provider)",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "start": "node init && node src/index.js",
+    "dev": "node init && node --watch src/index.js"
   },
   "dependencies": {
     "axios": "^1.9.0",
