@@ -22,8 +22,19 @@ export interface PaymentProps {
 
 /** Mensajes salientes hacia el parent frame (GHL custom payment provider). */
 export function postToParent(payload: Record<string, unknown>) {
-  if (window.parent && window.parent !== window) {
-    window.parent.postMessage(payload, '*');
+  // Send both object and stringified forms to parent/top — GHL is inconsistent
+  // about which frame/format it listens to (same class of issues as ready handshake).
+  const asString = JSON.stringify(payload);
+  const targets = [window.parent, window.top].filter(
+    (w, i, arr) => w && w !== window && arr.indexOf(w) === i
+  );
+  for (const target of targets) {
+    try {
+      target.postMessage(payload, '*');
+      target.postMessage(asString, '*');
+    } catch {
+      // ignore cross-origin postMessage errors
+    }
   }
 }
 
