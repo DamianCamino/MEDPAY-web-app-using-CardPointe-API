@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { PaymentMethodToggle } from './components/PaymentMethodToggle';
 import { TokenizerPanel } from './components/TokenizerPanel';
 import { FinancePanel } from './components/FinancePanel';
@@ -11,6 +11,8 @@ import {
   postToParent,
   tryParseJson,
   formatMoney,
+  startReadyHandshake,
+  normalizeCurrency,
 } from './protocol';
 
 const ALPHAEON_MIN_AMOUNT = 250;
@@ -57,31 +59,41 @@ export default function App() {
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
+  const propsReceivedRef = useRef(false);
   // --- Recibir props desde GHL (o inyectarlas nosotros mismos en modo prueba) ---
-  useEffect(() => {
+   useEffect(() => {
     const standalone = readStandaloneProps();
     if (standalone) {
       setPaymentProps(standalone);
       setIsStandalone(true);
       setPostalCode(standalone.contact?.postalCode || '');
+      propsReceivedRef.current = true;
     }
 
-    function handler(event: MessageEvent) {
+        function handler(event: MessageEvent) {
       const data = typeof event.data === 'string' ? tryParseJson(event.data) : event.data;
       if (!data || !data.type) return;
 
       if (data.type === 'payment_initiate_props') {
+        propsReceivedRef.current = true;
         setPaymentProps(data as PaymentProps);
         setPostalCode((data as PaymentProps).contact?.postalCode || '');
       } else if (data.type === 'setup_initiate_props') {
+        propsReceivedRef.current = true;
         setPaymentProps({ ...(data as PaymentProps), amount: 0, mode: 'setup' });
       }
     }
 
     window.addEventListener('message', handler);
-    postToParent({ type: 'custom_provider_ready', loaded: true });
-    return () => window.removeEventListener('message', handler);
+        let stopHandshake: (() => void) | undefined;
+    if (!standalone) {
+      stopHandshake = startReadyHandshake(() => propsReceivedRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('message', handler);
+      stopHandshake?.();
+    };
   }, []);
 
   // Reiniciar el token cada vez que cambia el metodo
@@ -115,7 +127,7 @@ export default function App() {
           achEntryCode: method === 'bank' ? 'WEB' : undefined,
           postal: method === 'card' ? (postalCode || paymentProps.contact?.postalCode) : undefined,
           amount: paymentProps.amount,
-          currency: paymentProps.currency || 'USD',
+          currency: normalizeCurrency(paymentProps.currency),
           capture: 'Y',
           orderId: paymentProps.orderId,
           transactionId: paymentProps.transactionId,
@@ -180,7 +192,7 @@ export default function App() {
           orderId: paymentProps.orderId,
           transactionId: paymentProps.transactionId,
           amount: paymentProps.amount,
-          currency: paymentProps.currency || 'USD',
+          currency: normalizeCurrency(paymentProps.currency),
           applicationId: payload?.application_id,
           accountNumber: payload?.alphaeon_account_number,
           status: payload?.status,
