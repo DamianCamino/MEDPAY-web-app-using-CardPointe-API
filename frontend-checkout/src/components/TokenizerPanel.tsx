@@ -20,7 +20,7 @@ const TOKENIZER_CSS = [
   'label{display:block;margin-bottom:6px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#9ca3af;}',
   'input,select{display:block;width:100%;margin-bottom:14px;padding:10px 12px;font-size:15px;font-family:inherit;color:#111827;background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;}',
   'input:focus,select:focus{outline:none;border-color:#5c67ff;background-color:#ffffff;}',
-  '.error{color:#b42318;border-color:#fecdca;background:#fef3f2;}',
+  '.error{border-color:#f97066;}',
 ].join('');
 /** Custom headless dropdown — local UI state only; outer accountType logic is untouched. */
 function AccountTypeDropdown({
