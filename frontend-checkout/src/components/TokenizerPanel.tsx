@@ -230,7 +230,7 @@ export function TokenizerPanel({
           title="Secure payment entry"
           src={tokenizerUrl ?? undefined}
           className="w-full border-0 bg-white rounded-lg"
-          style={{ height: method === 'card' ? 220 : 100 }}
+          style={{ height: method === 'card' ? 360 : 110 }}
           frameBorder={0}
           scrolling="no"
         />
