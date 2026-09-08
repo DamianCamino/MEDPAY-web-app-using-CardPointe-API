@@ -37,7 +37,42 @@ export function postToParent(payload: Record<string, unknown>) {
     }
   }
 }
+function postReadySignal(payload: Record<string, unknown>) {
+  const message = JSON.stringify(payload);
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage(message, '*');
+  }
+  if (window.top && window.top !== window.parent) {
+    window.top.postMessage(message, '*');
+  }
+}
 
+/** GHL handshake: retry until props arrive. */
+export function startReadyHandshake(shouldStop: () => boolean) {
+  const payload = {
+    type: 'custom_provider_ready',
+    loaded: true,
+    addCardOnFileSupported: false,
+  };
+
+  let attempts = 0;
+  const tick = () => {
+    if (shouldStop() || attempts >= 30) return;
+    postReadySignal(payload);
+    attempts += 1;
+  };
+
+  tick();
+  const intervalId = window.setInterval(tick, 500);
+  return () => clearInterval(intervalId);
+}
+
+export function normalizeCurrency(value?: string) {
+  const raw = (value || 'USD').toString().trim().toUpperCase();
+  if (!raw || raw === '840') return 'USD';
+  if (/^\d{3}$/.test(raw)) return 'USD';
+  return /^[A-Z]{3}$/.test(raw) ? raw : 'USD';
+}
 /**
  * El tokenizer de CardPointe manda el token via postMessage como string JSON
  * (o a veces como string crudo). Replica exactamente el parsing que ya usaba
